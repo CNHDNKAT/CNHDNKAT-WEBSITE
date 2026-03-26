@@ -154,7 +154,7 @@
 .agent-header {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-5);
+  gap: var(--space-4);
   padding-bottom: var(--space-4);
 }
 
@@ -196,7 +196,7 @@
 }
 
 .agent-body {
-  padding-left: calc(140px + var(--space-5));
+  width: 100%;
 }
 
 .agent-summary {
