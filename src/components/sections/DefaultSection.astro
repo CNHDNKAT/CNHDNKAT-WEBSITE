@@ -1,0 +1,13 @@
+---
+import type { MainSectionEntry } from "../../lib/content";
+import SectionShell from "./SectionShell.astro";
+
+interface Props {
+  entry: MainSectionEntry;
+  Content?: unknown;
+}
+
+const { entry, Content } = Astro.props;
+---
+
+<SectionShell entry={entry} Content={Content} />

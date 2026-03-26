@@ -1,0 +1,12 @@
+---
+interface Props {
+  id?: string;
+  message?: string;
+}
+
+const { id = "copy-toast", message = "Документ скопирован" } = Astro.props;
+---
+
+<div id={id} class="toast" aria-live="polite" aria-atomic="true">
+  {message}
+</div>

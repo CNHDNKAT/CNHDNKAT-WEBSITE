@@ -1,0 +1,17 @@
+---
+import type { NavItem } from "../lib/content";
+
+interface Props {
+  items: NavItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="nav" aria-label="Protocol sections">
+  {
+    items.map((item) => (
+      <a href={item.href}>#{item.label}</a>
+    ))
+  }
+</nav>

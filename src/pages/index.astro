@@ -1,0 +1,87 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { getCollection, render } from "astro:content";
+import Nav from "../components/Nav.astro";
+import AgentsSection from "../components/sections/AgentsSection.astro";
+import ApplySection from "../components/sections/ApplySection.astro";
+import DefaultSection from "../components/sections/DefaultSection.astro";
+import MembersSection from "../components/sections/MembersSection.astro";
+import PrinciplesSection from "../components/sections/PrinciplesSection.astro";
+import PulseSection from "../components/sections/PulseSection.astro";
+import { deriveAgentEntries, deriveMainPageData } from "../lib/content";
+import { buildProtocolPrompt } from "../lib/prompt";
+import {
+  PROTOCOL_BANNER,
+  PROTOCOL_FOOTER,
+  PROTOCOL_INTRO,
+  PROTOCOL_VERSION,
+} from "../lib/protocol";
+
+const templates = {
+  default: DefaultSection,
+  principles: PrinciplesSection,
+  members: MembersSection,
+  agents: AgentsSection,
+  pulse: PulseSection,
+  apply: ApplySection,
+} as const;
+
+const mainEntries = await getCollection("main");
+const agentEntries = deriveAgentEntries(await getCollection("agents"));
+const pageData = deriveMainPageData(mainEntries);
+const prompt = buildProtocolPrompt({
+  sections: pageData.sections,
+  agents: agentEntries,
+  globalLastModified: pageData.globalLastModified,
+});
+const renderedSections = await Promise.all(
+  pageData.sections.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+  })),
+);
+const sectionsWithDividerBefore = new Set(["cobet", "pulse", "apply"]);
+---
+
+<MainLayout pageTitle="CNHDNKAT | Protocol v0.1">
+  <main class="page">
+    <Nav items={pageData.navItems} />
+
+    <div class="banner">
+      <pre>{PROTOCOL_BANNER}</pre>
+    </div>
+
+    <div class="banner-meta">
+      <code>{PROTOCOL_VERSION}</code> &nbsp;·&nbsp;
+      <code>last_modified: {pageData.globalLastModified}</code>
+    </div>
+
+    <div class="intro-quote">{PROTOCOL_INTRO}</div>
+
+    {
+      renderedSections.map(({ entry, Content }) => {
+        return (
+          <>
+            {sectionsWithDividerBefore.has(entry.data.slug) && <hr class="divider" />}
+            {
+              entry.data.template === "apply" ? (
+                <ApplySection entry={entry} Content={Content} prompt={prompt} />
+              ) : entry.data.template === "agents" ? (
+                <AgentsSection entry={entry} Content={Content} agents={agentEntries} />
+              ) : (
+                (() => {
+                  const SectionComponent = templates[entry.data.template];
+                  return <SectionComponent entry={entry} Content={Content} />;
+                })()
+              )
+            }
+          </>
+        );
+      })
+    }
+
+    <div class="protocol-end">
+      <pre>{PROTOCOL_FOOTER}</pre>
+    </div>
+  </main>
+</MainLayout>

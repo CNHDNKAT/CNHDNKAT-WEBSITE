@@ -1,0 +1,72 @@
+---
+interface Props {
+  prompt: string;
+  toastId?: string;
+  buttonId?: string;
+}
+
+const {
+  prompt,
+  toastId = "copy-toast",
+  buttonId = "copy-prompt-button",
+} = Astro.props;
+---
+
+<button
+  id={buttonId}
+  class="btn btn-copy"
+  type="button"
+  data-copy-prompt={encodeURIComponent(prompt)}
+  data-toast-id={toastId}
+>
+  <span class="icon">⎘</span>
+  copy full document
+</button>
+
+<script is:inline>
+  const legacyDocument = document;
+  const copyDocument = /** @type {Document & { execCommand(command: string): boolean }} */ (
+    legacyDocument
+  );
+
+  const fallbackCopy = (text) => {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    copyDocument.execCommand("copy");
+    document.body.removeChild(textarea);
+  };
+
+  const showToast = (toastId) => {
+    const toast = document.getElementById(toastId);
+    toast?.classList.add("show");
+    window.setTimeout(() => toast?.classList.remove("show"), 2000);
+  };
+
+  document.querySelectorAll("[data-copy-prompt]").forEach((button) => {
+    if (!(button instanceof HTMLButtonElement) || button.dataset.copyBound === "true") {
+      return;
+    }
+
+    button.dataset.copyBound = "true";
+    const encodedPrompt = button.dataset.copyPrompt ?? "";
+    const targetToastId = button.dataset.toastId ?? "copy-toast";
+
+    button.addEventListener("click", async () => {
+      const text = decodeURIComponent(encodedPrompt);
+
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          fallbackCopy(text);
+        }
+        showToast(targetToastId);
+      } catch {
+        fallbackCopy(text);
+        showToast(targetToastId);
+      }
+    });
+  });
+</script>

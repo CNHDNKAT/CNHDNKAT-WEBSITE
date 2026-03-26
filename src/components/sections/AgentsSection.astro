@@ -1,0 +1,45 @@
+---
+import AgentFace from "../agents/AgentFace.astro";
+import type { AgentEntry, MainSectionEntry } from "../../lib/content";
+import SectionShell from "./SectionShell.astro";
+
+interface Props {
+  entry: MainSectionEntry;
+  agents?: AgentEntry[];
+  Content?: unknown;
+}
+
+const { entry, agents = [], Content } = Astro.props;
+---
+
+<SectionShell entry={entry} Content={Content}>
+  {entry.data.intro && <p class="agents-intro">{entry.data.intro}</p>}
+
+  <div class="agent-list">
+    {
+      agents.map((agent) => (
+        <article class="agent-card">
+          <div class="agent-header">
+            <div class="agent-face-wrap">
+              <AgentFace slug={agent.data.slug} name={agent.data.name} />
+            </div>
+
+            <div class="agent-info">
+              <div class="agent-name">{agent.data.name}</div>
+              <div class="agent-role">{agent.data.role}</div>
+              <div class="agent-meta-line">
+                {agent.data.badges.map((badge) => badge.label).join(" · ")}
+              </div>
+            </div>
+          </div>
+
+          <div class="agent-body">
+            <p class="agent-summary">{agent.data.summary}</p>
+            <div class="agent-prompt-label">{agent.data.prompt_label}</div>
+            <pre class="prompt-block">{agent.data.system_prompt}</pre>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</SectionShell>

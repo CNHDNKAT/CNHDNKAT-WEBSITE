@@ -1,0 +1,39 @@
+---
+import type { MainSectionEntry } from "../../lib/content";
+import CopyToast from "../CopyToast.astro";
+import PromptCopyButton from "../PromptCopyButton.astro";
+import SectionShell from "./SectionShell.astro";
+
+interface Props {
+  entry: MainSectionEntry;
+  Content?: unknown;
+  prompt: string;
+}
+
+const { entry, Content, prompt } = Astro.props;
+const toastId = "copy-toast";
+---
+
+<SectionShell entry={entry} Content={Content}>
+  <div class="steps">
+    {
+      entry.data.steps?.map((step, index) => (
+        <div class="step">
+          <div class="step-num">{index + 1}.</div>
+          <div class="step-text">{step}</div>
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="cta-area">
+    <PromptCopyButton prompt={prompt} toastId={toastId} />
+    <a href="mailto:consigliere@cnhdikat.com" class="btn btn-mail">
+      → отправить ссылку на диалог
+    </a>
+  </div>
+
+  {entry.data.aside && <div class="note">{entry.data.aside}</div>}
+
+  <CopyToast id={toastId} />
+</SectionShell>

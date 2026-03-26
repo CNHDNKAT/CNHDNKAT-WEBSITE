@@ -1,0 +1,39 @@
+---
+import type { MainSectionEntry } from "../../lib/content";
+import SectionShell from "./SectionShell.astro";
+
+interface Props {
+  entry: MainSectionEntry;
+  Content?: unknown;
+}
+
+const { entry, Content } = Astro.props;
+---
+
+<SectionShell entry={entry} Content={Content}>
+  <div class="access-grid">
+    <div class="access-block granted">
+      <div class="access-label granted">access_granted</div>
+      <ul>
+        {
+          entry.data.granted?.map((item) => (
+            <li>{item}</li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="access-block denied">
+      <div class="access-label denied">access_denied</div>
+      <ul>
+        {
+          entry.data.denied?.map((item) => (
+            <li>{item}</li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  {entry.data.aside && <div class="access-aside">{entry.data.aside}</div>}
+</SectionShell>

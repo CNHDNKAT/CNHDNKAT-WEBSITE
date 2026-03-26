@@ -1,0 +1,27 @@
+---
+import type { MainSectionEntry } from "../../lib/content";
+
+interface Props {
+  entry: MainSectionEntry;
+  Content?: unknown;
+}
+
+const { entry, Content } = Astro.props;
+const ContentComponent = Content as any;
+const HeadingTag = "h2";
+const hasBody = typeof entry.body === "string" && entry.body.trim().length > 0;
+---
+
+<section id={entry.data.slug} class="section">
+  <div class="section-header">
+    <HeadingTag>
+      <span class="hash">#</span>
+      {entry.data.nav_label ?? entry.data.slug}
+    </HeadingTag>
+  </div>
+  <div class="section-meta">last_modified: {entry.data.last_modified}</div>
+
+  {hasBody && ContentComponent && <ContentComponent />}
+
+  <slot />
+</section>
