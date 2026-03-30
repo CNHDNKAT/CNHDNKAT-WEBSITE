@@ -3,3 +3,4 @@ node_modules/
 .tmp-astro/
 dist/
 .DS_Store
+_in/*

@@ -1,13 +1,70 @@
 ---
+import "@fontsource-variable/fira-code/wght.css";
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
+import "@fontsource/ibm-plex-sans/700.css";
 import "../styles/tokens.css";
 import "../styles/base.css";
 import "../styles/components.css";
 
 interface Props {
   pageTitle?: string;
+  pageDescription?: string;
+  noindex?: boolean;
+  shareImagePath?: string;
 }
 
-const { pageTitle = "CNHDNKAT | Protocol v0.1" } = Astro.props;
+const basePath = import.meta.env.BASE_URL;
+const baseHref = basePath.endsWith("/") ? basePath : `${basePath}/`;
+const siteOrigin = Astro.site ?? Astro.url;
+
+const {
+  pageTitle = "CNHDNKAT | Protocol v0.1",
+  pageDescription = "CNHDNKAT — закрытое объединение компаний в сфере искусственного интеллекта: внедрение, разработка, продукты, консалтинг и AI governance.",
+  noindex = false,
+  shareImagePath = `${baseHref}share.jpg`,
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
+const shareImageUrl = new URL(
+  shareImagePath.startsWith("http") ? shareImagePath : shareImagePath.replace(/^\//, ""),
+  siteOrigin,
+).toString();
+const robotsContent = noindex ? "noindex, nofollow" : "index, follow";
+
+const jsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${canonicalUrl}#organization`,
+      name: "CNHDNKAT",
+      url: canonicalUrl,
+      description: pageDescription,
+      logo: shareImageUrl,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${canonicalUrl}#website`,
+      url: canonicalUrl,
+      name: "CNHDNKAT",
+      description: pageDescription,
+      publisher: { "@id": `${canonicalUrl}#organization` },
+      inLanguage: "ru",
+    },
+    {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+      url: canonicalUrl,
+      name: pageTitle,
+      description: pageDescription,
+      isPartOf: { "@id": `${canonicalUrl}#website` },
+      about: { "@id": `${canonicalUrl}#organization` },
+      inLanguage: "ru",
+    },
+  ],
+});
 ---
 
 <!doctype html>
@@ -16,14 +73,33 @@ const { pageTitle = "CNHDNKAT | Protocol v0.1" } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <meta name="description" content={pageDescription} />
+    <meta name="robots" content={robotsContent} />
+    <meta name="theme-color" content="#090d0a" />
+    <meta name="author" content="CNHDNKAT" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="shortcut icon" href={`${baseHref}favicon-32x32.png`} />
+    <link rel="icon" type="image/png" sizes="16x16" href={`${baseHref}favicon-16x16.png`} />
+    <link rel="icon" type="image/png" sizes="32x32" href={`${baseHref}favicon-32x32.png`} />
+    <link rel="apple-touch-icon" sizes="180x180" href={`${baseHref}apple-touch-icon.png`} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="CNHDNKAT" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={shareImageUrl} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="CNHDNKAT share image with green block C on a dark background" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={shareImageUrl} />
+    <meta name="twitter:image:alt" content="CNHDNKAT share image with green block C on a dark background" />
+    <script type="application/ld+json" set:html={jsonLd} />
+    <script defer src="https://stats.khabaroff.studio/script.js" data-website-id="fa2cd019-bec3-4ff7-b82e-07baa0b46cbd"></script>
     <title>{pageTitle}</title>
   </head>
   <body>

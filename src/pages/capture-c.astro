@@ -1,0 +1,58 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+
+const ASCII_C = ` ██████╗
+██╔════╝
+██║
+██║
+╚██████╗
+ ╚═════╝`;
+---
+
+<MainLayout pageTitle="Capture C | CNHDNKAT" noindex={true}>
+  <main class="capture-c-page">
+    <div class="capture-c-frame">
+      <pre class="capture-c-art">{ASCII_C}</pre>
+    </div>
+  </main>
+</MainLayout>
+
+<style>
+  :global(body) {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    background: #090d0a;
+  }
+
+  .capture-c-page {
+    width: fit-content;
+    padding: 40px;
+    background: #090d0a;
+  }
+
+  .capture-c-frame {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .capture-c-art {
+    margin: 0;
+    color: #67d487;
+    font-size: clamp(56px, 10vw, 160px);
+    line-height: 1.04;
+    font-weight: 700;
+    text-shadow:
+      4px 4px 0 rgba(103, 212, 135, 0.22),
+      8px 8px 0 rgba(103, 212, 135, 0.12);
+    user-select: none;
+    white-space: pre;
+  }
+
+  @media (max-width: 720px) {
+    .capture-c-page {
+      padding: 12px;
+    }
+  }
+</style>

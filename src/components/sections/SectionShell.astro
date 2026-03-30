@@ -8,7 +8,7 @@ interface Props {
 
 const { entry, Content } = Astro.props;
 const ContentComponent = Content as any;
-const HeadingTag = "h2";
+const HeadingTag = entry.data.slug === "about" ? "h1" : "h2";
 const hasBody = typeof entry.body === "string" && entry.body.trim().length > 0;
 ---
 
