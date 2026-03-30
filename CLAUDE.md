@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-[To be filled: Brief description of what this project does]
+Статический сайт-протокол синдиката CNHDNKAT — закрытого объединения компаний в сфере AI. Astro 6, TypeScript, контент в Markdown с Zod-валидацией. Деплой на VPS (https://cnhdnkat.com) через GitHub Actions + SSH.
 
 ## OpenSpec Workflow
 
@@ -66,43 +66,70 @@ See `openspec/AGENTS.md` for complete workflow details.
 ### Setup
 
 ```bash
-npm install -g @fission-ai/openspec@latest
-# [Add additional installation/setup commands here]
+npm install
 ```
 
 ### Build & Run
 
 ```bash
-# [Add build commands]
-# [Add run/start commands]
+npm run dev        # Dev-сервер с HMR
+npm run build      # Статическая сборка в dist/
+npm run preview    # Предпросмотр собранного сайта
 ```
 
 ### Testing
 
 ```bash
-# [Add test commands]
-# [Add single test run command if applicable]
+npm test           # Vitest — юнит-тесты
 ```
 
-### Linting & Formatting
+### Type Checking
 
 ```bash
-# [Add linting commands]
-# [Add formatting commands]
+npx astro check    # Проверка типов Astro + TypeScript
 ```
 
 ## Architecture
 
-[To be filled: High-level architecture overview that requires understanding multiple files]
+Astro 6 static site с Content Collections. Контент (секции, агенты) хранится в Markdown с frontmatter, валидируется через Zod-схемы в `src/content.config.ts`. Каждая секция использует свой шаблон (template) для рендеринга.
 
 ### Key Patterns
 
-[To be filled: Important architectural patterns, design decisions, or conventions used in this codebase]
+- **Content Collections** — `src/content/main/` (секции протокола) и `src/content/agents/` (AI-агенты CASPAR, MELCHIOR, BALTHASAR). Схемы в `src/content.config.ts`.
+- **Template dispatch** — поле `template` в frontmatter определяет компонент рендеринга: `default`, `principles`, `members`, `agents`, `pulse`, `apply`.
+- **SectionShell** — обёртка для всех секций, генерирует `<h1>` для первой секции (about), `<h2>` для остальных.
+- **CSS tokens** — дизайн-токены в `src/styles/tokens.css`, глобальные стили в `base.css`, компоненты в `components.css`. Без CSS-фреймворков.
+- **Self-hosted шрифты** — `@fontsource` (Fira Code, IBM Plex Sans), без внешних зависимостей.
+- **SEO** — JSON-LD (Organization + WebSite + WebPage), canonical URL, OG/Twitter meta, sitemap, robots.txt.
 
 ### Directory Structure
 
-[To be filled: Only non-obvious structural decisions that affect how code should be organized]
+```
+src/
+├── content/          # Markdown-контент с Zod-валидацией
+│   ├── main/         # 8 секций протокола (01-about .. 08-apply)
+│   └── agents/       # 3 AI-агента
+├── components/
+│   ├── sections/     # Шаблоны секций (DefaultSection, AgentsSection и т.д.)
+│   └── agents/       # SVG-лица агентов
+├── layouts/          # MainLayout.astro — единственный layout
+├── lib/              # Утилиты: content helpers, prompt builder, protocol metadata
+├── pages/            # Маршруты: index.astro, capture-c.astro
+└── styles/           # tokens.css, base.css, components.css
+scripts/deploy/       # deploy.sh — деплой на VPS с релизами и rollback
+```
+
+### Deploy
+
+- **VPS:** push в `main` → GitHub Actions (appleboy/ssh-action) → SSH на сервер
+- **deploy.sh:** git fetch → checkout SHA → npm ci → build → cp dist → symlink switch → nginx reload → health check → cleanup old releases
+- **Переменные:** `SITE_URL` (default: https://cnhdnkat.com), `HEALTHCHECK_URL`, `MAX_RELEASES`
+- **Nginx:** `/var/www/syndicate-website/current` → текущий релиз
+- **Rollback:** автоматический при failed health check
 
 ## Important Notes
 
-[To be filled: Project-specific context that would be difficult to discover by reading individual files]
+- `astro.config.mjs` использует `process.env.SITE_URL` — на VPS задаётся в deploy.sh, локально fallback на https://cnhdnkat.com
+- Страница `capture-c` имеет `noindex` и исключена из sitemap
+- Umami-аналитика подключена через `stats.khabaroff.studio`
+- Язык сайта — русский (`lang="ru"`), контент и комментарии на русском
