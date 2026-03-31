@@ -146,6 +146,10 @@ pre {
   font-size: 14px;
 }
 
+.section-header-actions {
+  margin-bottom: var(--space-5);
+}
+
 .section p,
 .section li,
 .section blockquote {
