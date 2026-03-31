@@ -15,12 +15,13 @@ describe("ApplySection dialog webhook", () => {
     expect(source).toContain(
       "https://n8n.khabaroff.com/webhook-test/586a1568-5779-40bf-98ab-bd222fb82798",
     );
-    expect(source).toContain('method="POST"');
-    expect(source).toContain('action={webhookUrl}');
-    expect(source).toContain('target={targetName}');
+    expect(source).toContain("navigator.sendBeacon");
+    expect(source).toContain("new URLSearchParams({ dialogUrl })");
     expect(source).toContain('class="dialog-link-inline"');
     expect(source).not.toContain("поделиться ссылкой на диалог");
     expect(source).toContain('pattern="https://.*"');
+    expect(source).not.toContain('target={targetName}');
+    expect(source).not.toContain('class="dialog-link-target"');
     expect(source).not.toContain("fetch(webhookUrl");
   });
 

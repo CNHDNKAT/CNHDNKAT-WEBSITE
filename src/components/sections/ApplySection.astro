@@ -17,7 +17,7 @@ const webhookUrl =
   "https://n8n.khabaroff.com/webhook-test/586a1568-5779-40bf-98ab-bd222fb82798";
 const formId = "dialog-link-form";
 const inputId = "dialog-link-input";
-const targetName = "dialog-link-target";
+const statusId = "dialog-link-status";
 ---
 
 <SectionShell entry={entry} Content={Content}>
@@ -38,9 +38,9 @@ const targetName = "dialog-link-target";
     <form
       id={formId}
       class="dialog-link-form"
-      method="POST"
-      action={webhookUrl}
-      target={targetName}
+      data-dialog-link-form
+      data-status-id={statusId}
+      data-webhook-url={webhookUrl}
     >
       <div class="dialog-link-inline">
         <input
@@ -57,11 +57,61 @@ const targetName = "dialog-link-target";
         />
         <button class="btn btn-mail" type="submit">{typografText("→ отправить ссылку на диалог")}</button>
       </div>
+      <p id={statusId} class="dialog-link-status" aria-live="polite"></p>
     </form>
-    <iframe name={targetName} class="dialog-link-target" tabindex="-1" aria-hidden="true"></iframe>
   </div>
 
   {entry.data.aside && <div class="note">{typografText(entry.data.aside)}</div>}
 
   <CopyToast id={toastId} />
 </SectionShell>
+
+<script is:inline>
+  const setDialogLinkStatus = (element, message, state) => {
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    element.textContent = message;
+    element.dataset.state = state;
+  };
+
+  document.querySelectorAll("[data-dialog-link-form]").forEach((form) => {
+    if (!(form instanceof HTMLFormElement) || form.dataset.dialogLinkBound === "true") {
+      return;
+    }
+
+    form.dataset.dialogLinkBound = "true";
+
+    const input = form.querySelector("[name='dialogUrl']");
+    const statusId = form.dataset.statusId ?? "";
+    const status = statusId ? document.getElementById(statusId) : null;
+    const webhookUrl = form.dataset.webhookUrl ?? "";
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      if (!(input instanceof HTMLInputElement)) {
+        return;
+      }
+
+      const dialogUrl = input.value.trim();
+
+      if (!dialogUrl.startsWith("https://")) {
+        setDialogLinkStatus(status, "Ссылка должна начинаться с https://", "error");
+        input.focus();
+        return;
+      }
+
+      const submitted = navigator.sendBeacon(webhookUrl, new URLSearchParams({ dialogUrl }));
+
+      if (!submitted) {
+        setDialogLinkStatus(status, "Не удалось отправить ссылку. Попробуй ещё раз.", "error");
+        return;
+      }
+
+      input.value = "";
+      setDialogLinkStatus(status, "Ссылка отправлена.", "success");
+    });
+  });
+</script>

@@ -306,11 +306,20 @@
   outline: none;
 }
 
-.dialog-link-target {
-  width: 0;
-  height: 0;
-  border: 0;
-  visibility: hidden;
+.dialog-link-status {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: 14px;
+}
+
+.dialog-link-status[data-state="success"] {
+  color: var(--color-accent);
+}
+
+.dialog-link-status[data-state="error"] {
+  color: var(--color-red);
 }
 
 .btn {
