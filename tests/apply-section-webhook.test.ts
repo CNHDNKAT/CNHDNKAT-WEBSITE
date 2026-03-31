@@ -12,16 +12,18 @@ describe("ApplySection dialog webhook", () => {
 
     expect(source).toContain('type="text"');
     expect(source).toContain('name="dialogUrl"');
+    expect(source).toContain('name="telegramUsername"');
     expect(source).toContain(
-      "https://n8n.khabaroff.com/webhook-test/586a1568-5779-40bf-98ab-bd222fb82798",
+      "https://n8n.khabaroff.com/webhook/586a1568-5779-40bf-98ab-bd222fb82798",
     );
-    expect(source).toContain("navigator.sendBeacon");
-    expect(source).toContain("new URLSearchParams({ dialogUrl })");
+    expect(source).toContain("new URLSearchParams({ dialogUrl, telegramUsername })");
+    expect(source).toContain("new Image()");
+    expect(source).toContain("requestUrl");
     expect(source).toContain('class="dialog-link-inline"');
     expect(source).not.toContain("поделиться ссылкой на диалог");
     expect(source).toContain('pattern="https://.*"');
-    expect(source).not.toContain('target={targetName}');
-    expect(source).not.toContain('class="dialog-link-target"');
+    expect(source).toContain('placeholder="@nickname"');
+    expect(source).not.toContain("navigator.sendBeacon");
     expect(source).not.toContain("fetch(webhookUrl");
   });
 

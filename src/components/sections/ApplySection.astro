@@ -14,9 +14,10 @@ interface Props {
 const { entry, Content, prompt } = Astro.props;
 const toastId = "copy-toast";
 const webhookUrl =
-  "https://n8n.khabaroff.com/webhook-test/586a1568-5779-40bf-98ab-bd222fb82798";
+  "https://n8n.khabaroff.com/webhook/586a1568-5779-40bf-98ab-bd222fb82798";
 const formId = "dialog-link-form";
 const inputId = "dialog-link-input";
+const telegramInputId = "telegram-username-input";
 const statusId = "dialog-link-status";
 ---
 
@@ -55,6 +56,16 @@ const statusId = "dialog-link-status";
           title="Ссылка должна начинаться с https://"
           required
         />
+        <input
+          id={telegramInputId}
+          class="dialog-link-input dialog-link-input-telegram"
+          name="telegramUsername"
+          type="text"
+          inputmode="text"
+          autocomplete="username"
+          placeholder="@nickname"
+          required
+        />
         <button class="btn btn-mail" type="submit">{typografText("→ отправить ссылку на диалог")}</button>
       </div>
       <p id={statusId} class="dialog-link-status" aria-live="polite"></p>
@@ -83,7 +94,8 @@ const statusId = "dialog-link-status";
 
     form.dataset.dialogLinkBound = "true";
 
-    const input = form.querySelector("[name='dialogUrl']");
+    const dialogUrlInput = form.querySelector("[name='dialogUrl']");
+    const telegramUsernameInput = form.querySelector("[name='telegramUsername']");
     const statusId = form.dataset.statusId ?? "";
     const status = statusId ? document.getElementById(statusId) : null;
     const webhookUrl = form.dataset.webhookUrl ?? "";
@@ -91,26 +103,34 @@ const statusId = "dialog-link-status";
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
-      if (!(input instanceof HTMLInputElement)) {
+      if (
+        !(dialogUrlInput instanceof HTMLInputElement) ||
+        !(telegramUsernameInput instanceof HTMLInputElement)
+      ) {
         return;
       }
 
-      const dialogUrl = input.value.trim();
+      const dialogUrl = dialogUrlInput.value.trim();
+      const telegramUsername = telegramUsernameInput.value.trim();
 
       if (!dialogUrl.startsWith("https://")) {
         setDialogLinkStatus(status, "Ссылка должна начинаться с https://", "error");
-        input.focus();
+        dialogUrlInput.focus();
         return;
       }
 
-      const submitted = navigator.sendBeacon(webhookUrl, new URLSearchParams({ dialogUrl }));
-
-      if (!submitted) {
-        setDialogLinkStatus(status, "Не удалось отправить ссылку. Попробуй ещё раз.", "error");
+      if (telegramUsername.length === 0) {
+        setDialogLinkStatus(status, "Укажи Telegram username.", "error");
+        telegramUsernameInput.focus();
         return;
       }
 
-      input.value = "";
+      const requestUrl = `${webhookUrl}?${new URLSearchParams({ dialogUrl, telegramUsername })}`;
+      const beacon = new Image();
+      beacon.src = requestUrl;
+
+      dialogUrlInput.value = "";
+      telegramUsernameInput.value = "";
       setDialogLinkStatus(status, "Ссылка отправлена.", "success");
     });
   });
