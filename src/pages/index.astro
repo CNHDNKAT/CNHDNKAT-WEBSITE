@@ -30,7 +30,11 @@ const templates = {
 const mainEntries = await getCollection("main");
 const agentEntries = deriveAgentEntries(await getCollection("agents"));
 const pageData = deriveMainPageData(mainEntries);
-const prompt = await readPromptDocument();
+const prompt = await readPromptDocument({
+  sections: pageData.sections,
+  agents: agentEntries,
+  globalLastModified: pageData.globalLastModified,
+});
 const renderedSections = await Promise.all(
   pageData.sections.map(async (entry) => ({
     entry,
