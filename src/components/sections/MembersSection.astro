@@ -1,5 +1,6 @@
 ---
 import type { MainSectionEntry } from "../../lib/content";
+import { typografText } from "../../lib/typograf";
 import SectionShell from "./SectionShell.astro";
 
 interface Props {
@@ -17,7 +18,7 @@ const { entry, Content } = Astro.props;
       <ul>
         {
           entry.data.granted?.map((item) => (
-            <li>{item}</li>
+            <li>{typografText(item)}</li>
           ))
         }
       </ul>
@@ -28,12 +29,12 @@ const { entry, Content } = Astro.props;
       <ul>
         {
           entry.data.denied?.map((item) => (
-            <li>{item}</li>
+            <li>{typografText(item)}</li>
           ))
         }
       </ul>
     </div>
   </div>
 
-  {entry.data.aside && <div class="access-aside">{entry.data.aside}</div>}
+  {entry.data.aside && <div class="access-aside">{typografText(entry.data.aside)}</div>}
 </SectionShell>

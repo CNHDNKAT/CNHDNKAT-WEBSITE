@@ -7,6 +7,7 @@ import "@fontsource/ibm-plex-sans/700.css";
 import "../styles/tokens.css";
 import "../styles/base.css";
 import "../styles/components.css";
+import { typografText } from "../lib/typograf";
 
 interface Props {
   pageTitle?: string;
@@ -25,6 +26,7 @@ const {
   noindex = false,
   shareImagePath = `${baseHref}share.jpg`,
 } = Astro.props;
+const formattedPageDescription = typografText(pageDescription);
 
 const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const shareImageUrl = new URL(
@@ -41,7 +43,7 @@ const jsonLd = JSON.stringify({
       "@id": `${canonicalUrl}#organization`,
       name: "CNHDNKAT",
       url: canonicalUrl,
-      description: pageDescription,
+      description: formattedPageDescription,
       logo: shareImageUrl,
     },
     {
@@ -49,7 +51,7 @@ const jsonLd = JSON.stringify({
       "@id": `${canonicalUrl}#website`,
       url: canonicalUrl,
       name: "CNHDNKAT",
-      description: pageDescription,
+      description: formattedPageDescription,
       publisher: { "@id": `${canonicalUrl}#organization` },
       inLanguage: "ru",
     },
@@ -58,7 +60,7 @@ const jsonLd = JSON.stringify({
       "@id": canonicalUrl,
       url: canonicalUrl,
       name: pageTitle,
-      description: pageDescription,
+      description: formattedPageDescription,
       isPartOf: { "@id": `${canonicalUrl}#website` },
       about: { "@id": `${canonicalUrl}#organization` },
       inLanguage: "ru",
@@ -73,7 +75,7 @@ const jsonLd = JSON.stringify({
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="description" content={pageDescription} />
+    <meta name="description" content={formattedPageDescription} />
     <meta name="robots" content={robotsContent} />
     <meta name="theme-color" content="#090d0a" />
     <meta name="author" content="CNHDNKAT" />
@@ -86,7 +88,7 @@ const jsonLd = JSON.stringify({
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="CNHDNKAT" />
     <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={pageDescription} />
+    <meta property="og:description" content={formattedPageDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={shareImageUrl} />
     <meta property="og:image:type" content="image/jpeg" />
@@ -95,7 +97,7 @@ const jsonLd = JSON.stringify({
     <meta property="og:image:alt" content="CNHDNKAT share image with green block C on a dark background" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:description" content={formattedPageDescription} />
     <meta name="twitter:image" content={shareImageUrl} />
     <meta name="twitter:image:alt" content="CNHDNKAT share image with green block C on a dark background" />
     <script type="application/ld+json" set:html={jsonLd} />

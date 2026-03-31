@@ -1,5 +1,6 @@
 ---
 import type { MainSectionEntry } from "../../lib/content";
+import { typografText } from "../../lib/typograf";
 
 interface Props {
   entry: MainSectionEntry;
@@ -11,13 +12,14 @@ const ContentComponent = Content as any;
 const HeadingTag = entry.data.slug === "about" ? "h1" : "h2";
 const hasBody = typeof entry.body === "string" && entry.body.trim().length > 0;
 const hasHeaderActions = Astro.slots.has("header-actions");
+const sectionLabel = typografText(entry.data.nav_label ?? entry.data.slug);
 ---
 
 <section id={entry.data.slug} class="section">
   <div class="section-header">
     <HeadingTag>
       <span class="hash">#</span>
-      {entry.data.nav_label ?? entry.data.slug}
+      {sectionLabel}
     </HeadingTag>
   </div>
   <div class="section-meta">last_modified: {entry.data.last_modified}</div>

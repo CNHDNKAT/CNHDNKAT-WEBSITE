@@ -1,5 +1,6 @@
 ---
 import type { MainSectionEntry } from "../../lib/content";
+import { typografText } from "../../lib/typograf";
 import SectionShell from "./SectionShell.astro";
 
 interface Props {
@@ -16,21 +17,21 @@ const { entry, Content } = Astro.props;
       <div class="subsection">
         <h3>
           <span class="hash">##</span>
-          {subsection.title}
+          {typografText(subsection.title)}
         </h3>
-        {subsection.meta && <div class="subsection-meta">{subsection.meta}</div>}
+        {subsection.meta && <div class="subsection-meta">{typografText(subsection.meta)}</div>}
 
         <div class="lab-card">
           {subsection.badges.length > 0 && (
             <div class="lab-badges">
               {subsection.badges.map((badge) => (
-                <span class="lab-badge">{badge}</span>
+                <span class="lab-badge">{typografText(badge)}</span>
               ))}
             </div>
           )}
 
           {subsection.paragraphs.map((paragraph) => (
-            <p>{paragraph}</p>
+            <p>{typografText(paragraph)}</p>
           ))}
         </div>
       </div>

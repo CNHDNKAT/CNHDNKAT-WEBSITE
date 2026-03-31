@@ -16,7 +16,9 @@
     "@astrojs/sitemap": "^3.7.2",
     "@fontsource-variable/fira-code": "^5.2.7",
     "@fontsource/ibm-plex-sans": "^5.2.8",
-    "astro": "^6.1.0"
+    "@mavrin/remark-typograf": "^2.2.0",
+    "astro": "^6.1.0",
+    "typograf": "^6.15.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",

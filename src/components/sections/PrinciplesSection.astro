@@ -1,5 +1,6 @@
 ---
 import type { MainSectionEntry } from "../../lib/content";
+import { typografText } from "../../lib/typograf";
 import SectionShell from "./SectionShell.astro";
 
 interface Props {
@@ -17,10 +18,10 @@ const { entry, Content } = Astro.props;
         <article class="principle-card">
           <div class="principle-num">{principle.number}</div>
           <div class="principle-title">
-            {principle.title}
+            {typografText(principle.title)}
             {principle.proposed && <span class="tag-proposed">proposed</span>}
           </div>
-          <p>{principle.body}</p>
+          <p>{typografText(principle.body)}</p>
         </article>
       ))
     }

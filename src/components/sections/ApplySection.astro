@@ -1,5 +1,6 @@
 ---
 import type { MainSectionEntry } from "../../lib/content";
+import { typografText } from "../../lib/typograf";
 import CopyToast from "../CopyToast.astro";
 import PromptCopyButton from "../PromptCopyButton.astro";
 import SectionShell from "./SectionShell.astro";
@@ -16,7 +17,7 @@ const webhookUrl =
   "https://n8n.khabaroff.com/webhook-test/586a1568-5779-40bf-98ab-bd222fb82798";
 const formId = "dialog-link-form";
 const inputId = "dialog-link-input";
-const statusId = "dialog-link-status";
+const targetName = "dialog-link-target";
 ---
 
 <SectionShell entry={entry} Content={Content}>
@@ -25,9 +26,9 @@ const statusId = "dialog-link-status";
   <div class="steps">
     {
       entry.data.steps?.map((step, index) => (
-        <div class="step">
-          <div class="step-num">{index + 1}.</div>
-          <div class="step-text">{step}</div>
+          <div class="step">
+            <div class="step-num">{index + 1}.</div>
+          <div class="step-text">{typografText(step)}</div>
         </div>
       ))
     }
@@ -37,9 +38,9 @@ const statusId = "dialog-link-status";
     <form
       id={formId}
       class="dialog-link-form"
-      data-dialog-link-form
-      data-status-id={statusId}
-      data-webhook-url={webhookUrl}
+      method="POST"
+      action={webhookUrl}
+      target={targetName}
     >
       <div class="dialog-link-inline">
         <input
@@ -50,77 +51,17 @@ const statusId = "dialog-link-status";
           inputmode="url"
           autocomplete="url"
           placeholder="https://chatgpt.com/share/..."
+          pattern="https://.*"
+          title="Ссылка должна начинаться с https://"
           required
         />
-        <button class="btn btn-mail" type="submit">→ отправить ссылку на диалог</button>
+        <button class="btn btn-mail" type="submit">{typografText("→ отправить ссылку на диалог")}</button>
       </div>
-      <p id={statusId} class="dialog-link-status" aria-live="polite"></p>
     </form>
+    <iframe name={targetName} class="dialog-link-target" tabindex="-1" aria-hidden="true"></iframe>
   </div>
 
-  {entry.data.aside && <div class="note">{entry.data.aside}</div>}
+  {entry.data.aside && <div class="note">{typografText(entry.data.aside)}</div>}
 
   <CopyToast id={toastId} />
 </SectionShell>
-
-<script is:inline>
-  const setDialogLinkStatus = (element, message, state) => {
-    if (!(element instanceof HTMLElement)) {
-      return;
-    }
-
-    element.textContent = message;
-    element.dataset.state = state;
-  };
-
-  document.querySelectorAll("[data-dialog-link-form]").forEach((form) => {
-    if (!(form instanceof HTMLFormElement) || form.dataset.dialogLinkBound === "true") {
-      return;
-    }
-
-    form.dataset.dialogLinkBound = "true";
-
-    const input = form.querySelector("[name='dialogUrl']");
-    const submitButton = form.querySelector("button[type='submit']");
-    const statusId = form.dataset.statusId ?? "";
-    const status = statusId ? document.getElementById(statusId) : null;
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      if (!(input instanceof HTMLInputElement) || !(submitButton instanceof HTMLButtonElement)) {
-        return;
-      }
-
-      const dialogUrl = input.value.trim();
-
-      if (!dialogUrl.startsWith("https://")) {
-        setDialogLinkStatus(status, "Ссылка должна начинаться с https://", "error");
-        input.focus();
-        return;
-      }
-
-      submitButton.disabled = true;
-      setDialogLinkStatus(status, "Отправляю ссылку...", "pending");
-
-      try {
-        const webhookUrl = form.dataset.webhookUrl ?? "";
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          body: new URLSearchParams({ dialogUrl }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Webhook request failed");
-        }
-
-        input.value = "";
-        setDialogLinkStatus(status, "Ссылка отправлена.", "success");
-      } catch {
-        setDialogLinkStatus(status, "Не удалось отправить ссылку. Попробуй ещё раз.", "error");
-      } finally {
-        submitButton.disabled = false;
-      }
-    });
-  });
-</script>

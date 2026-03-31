@@ -10,6 +10,7 @@ import PrinciplesSection from "../components/sections/PrinciplesSection.astro";
 import PulseSection from "../components/sections/PulseSection.astro";
 import { deriveAgentEntries, deriveMainPageData } from "../lib/content";
 import { readPromptDocument } from "../lib/prompt";
+import { typografText } from "../lib/typograf";
 import {
   PROTOCOL_BANNER,
   PROTOCOL_FOOTER,
@@ -52,7 +53,7 @@ const sectionsWithDividerBefore = new Set(["cobet", "pulse", "apply"]);
       <code>last_modified: {pageData.globalLastModified}</code>
     </div>
 
-    <div class="intro-quote">{PROTOCOL_INTRO}</div>
+    <div class="intro-quote">{typografText(PROTOCOL_INTRO)}</div>
 
     {
       renderedSections.map(({ entry, Content }) => {

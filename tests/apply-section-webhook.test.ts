@@ -15,12 +15,13 @@ describe("ApplySection dialog webhook", () => {
     expect(source).toContain(
       "https://n8n.khabaroff.com/webhook-test/586a1568-5779-40bf-98ab-bd222fb82798",
     );
-    expect(source).toContain("new URLSearchParams({ dialogUrl })");
-    expect(source).toContain("fetch(webhookUrl");
+    expect(source).toContain('method="POST"');
+    expect(source).toContain('action={webhookUrl}');
+    expect(source).toContain('target={targetName}');
     expect(source).toContain('class="dialog-link-inline"');
     expect(source).not.toContain("поделиться ссылкой на диалог");
-    expect(source).toContain('dialogUrl.startsWith("https://")');
-    expect(source).not.toContain("new URL(value)");
+    expect(source).toContain('pattern="https://.*"');
+    expect(source).not.toContain("fetch(webhookUrl");
   });
 
   it("places the prompt copy button into the section header actions slot", () => {

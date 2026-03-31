@@ -1,12 +1,15 @@
 ---
+import { typografText } from "../lib/typograf";
+
 interface Props {
   id?: string;
   message?: string;
 }
 
 const { id = "copy-toast", message = "Промпт скопирован" } = Astro.props;
+const formattedMessage = typografText(message);
 ---
 
 <div id={id} class="toast" aria-live="polite" aria-atomic="true">
-  {message}
+  {formattedMessage}
 </div>
