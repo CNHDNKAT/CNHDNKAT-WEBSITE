@@ -125,9 +125,8 @@ const statusId = "dialog-link-status";
         return;
       }
 
-      const requestUrl = `${webhookUrl}?${new URLSearchParams({ dialogUrl, telegramUsername })}`;
-      const beacon = new Image();
-      beacon.src = requestUrl;
+      const payload = JSON.stringify({ dialogUrl, telegramUsername });
+      navigator.sendBeacon(webhookUrl, new Blob([payload], { type: "application/json" }));
 
       dialogUrlInput.value = "";
       telegramUsernameInput.value = "";
